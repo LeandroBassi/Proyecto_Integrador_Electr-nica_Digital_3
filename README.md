@@ -6,8 +6,8 @@ Breve explicación de qué hace el proyecto y cuál es el objetivo.
 
 ## Integrantes
 - BASSI Leandro Dante
-- BASTIDA Lucas Ramiro
 - PEREZ Lautaro Ezequiel
+- BASTIDA Lucas Ramiro
 
 ## Profesor:
 - Ing. Migliore Emiliano
