@@ -18,7 +18,18 @@ Adicionalmente, la distancia medida es transmitida en tiempo real a una PC media
 - Ing. Migliore Emiliano
   
 ## Hardware utilizado
-- LPC1769
+- Placa de desarrollo LPC1769
+- Sensor Sharp GP2Y0A21YK0F
+- Sensor HC-SR04
+- Buzzer piezoelectrico Activo 12V
+- Optoacoplador DC (PC817)
+- MOSFET IRLZ44N
+- 1 pulsador
+- 3 LEDs (Verde / Amarrilo / Rojo)
+- 4 displays 7 segmentos
+- 4 transistores NPN
+- Resistencias
+- CP2102
 
 ## Requisitos
 - MCUXpresso IDE
