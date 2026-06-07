@@ -1,0 +1,28 @@
+/.metadata/
+# Ignore built output files
+*.o
+*.a
+*.axf
+*.map
+
+# Ignore automatically generated files
+*~.nib
+local.properties
+.classpath
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.mcj
+gen/
+*.dblite
+
+# Ignore MCUXpresso IDE specific files
+*.ewp
+*.eww
+*.dep
+
+.DS_Store
+Thumbs.db
