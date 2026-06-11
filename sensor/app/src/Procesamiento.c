@@ -2,7 +2,7 @@
 #include "DriverLeds.h"
 #include "DriverBuzzer.h"
 #include "ComunicacionUART.h"
-#include "PulsadorHW.h"
+#include "lpc17xx_exti.h"
 
 static float umbral = 150.0f;
 static uint8_t muted = 0;
@@ -10,7 +10,7 @@ static uint8_t muted = 0;
 void Procesamiento_Init(void) { 
     DriverLeds_Init(); 
     DriverBuzzer_Init(); 
-    PulsadorHW_Init();
+    // PulsadorHW_Init ya llamado en main o aquí si se prefiere
 }
 
 void Procesamiento_ToggleSilenciar(void) {
@@ -33,10 +33,8 @@ void Procesamiento_Actualizar(float d_ir, float d_us) {
     }
 }
 
-void GPIO_IRQHandler(void) {
-    if (LPC_GPIOINT->IO2IntStatF & (1 << 10)) {
-        LPC_GPIOINT->IO2IntClr = (1 << 10);
-        Procesamiento_ToggleSilenciar();
-        UART_SendString("Alarma silenciada manualmente\r\n");
-    }
+void EINT0_IRQHandler(void) {
+    Procesamiento_ToggleSilenciar();
+    UART_SendString("Alarma silenciada manualmente\r\n");
+    EXTI_ClearEXTIFlag(EXTI_EINT0);
 }

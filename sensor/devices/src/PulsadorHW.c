@@ -1,11 +1,20 @@
 #include "PulsadorHW.h"
-#include "LPC17xx.h"
+#include "lpc17xx_exti.h"
+#include "lpc17xx_pinsel.h"
+#include "lpc17xx_gpio.h"
 
 void PulsadorHW_Init(void) {
-    // P2.10 como EINT0
-    LPC_PINCON->PINSEL4 &= ~(3 << 20);
-    LPC_PINCON->PINSEL4 |= (1 << 20);
-    LPC_GPIO2->FIODIR &= ~(1 << 10);
-    LPC_GPIOINT->IO2IntEnF |= (1 << 10);
-    NVIC_EnableIRQ(GPIO_IRQn);
+    PINSEL_CFG_Type pinCfg;
+    pinCfg.Portnum = PINSEL_PORT_2;
+    pinCfg.Pinnum = PINSEL_PIN_10;
+    pinCfg.Funcnum = PINSEL_FUNC_1; // EINT0
+    PINSEL_ConfigPin(&pinCfg);
+
+    EXTI_InitTypeDef extiCfg;
+    extiCfg.EXTI_Line = EXTI_EINT0;
+    extiCfg.EXTI_Mode = EXTI_MODE_EDGE_SENSITIVE;
+    extiCfg.EXTI_polarity = EXTI_POLARITY_LOW_ACTIVE_OR_FALLING_EDGE;
+    EXTI_Config(&extiCfg);
+    
+    NVIC_EnableIRQ(EINT0_IRQn);
 }

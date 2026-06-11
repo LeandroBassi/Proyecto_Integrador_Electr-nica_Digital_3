@@ -1,19 +1,30 @@
 #include "BuzzerPower.h"
+#include "lpc17xx_pwm.h"
+#include "lpc17xx_pinsel.h"
+#include "lpc17xx_clkpwr.h"
 
 void BuzzerPower_Init(void) {
-    // P1.18 como PWM1.1
-    LPC_PINCON->PINSEL3 &= ~(3 << 4);
-    LPC_PINCON->PINSEL3 |= (2 << 4);
+    PINSEL_CFG_Type pinCfg;
+    pinCfg.Portnum = PINSEL_PORT_1;
+    pinCfg.Pinnum = PINSEL_PIN_18;
+    pinCfg.Funcnum = PINSEL_FUNC_2;
+    PINSEL_ConfigPin(&pinCfg);
 
-    LPC_SC->PCONP |= (1 << 6);  // Encender PWM1
-    LPC_PWM1->PR = 25 - 1;      // Timer de 1us (asumiendo pclk = 25MHz)
-    LPC_PWM1->PCR = (1 << 9);   // Habilitar salida de PWM1.1
-    LPC_PWM1->MCR = (1 << 1);   // Reset del timer al coincidir con MR0
+    // PWM1 init
+    PWM_TIMERCFG_Type pwmCfg;
+    pwmCfg.PrescaleOption = TIM_PRESCALE_USVAL;
+    pwmCfg.PrescaleValue = 1;
+    PWM_Init(LPC_PWM1, PWM_MODE_TIMER, &pwmCfg);
     
-    LPC_PWM1->MR0 = 1000;       // 1kHz
-    LPC_PWM1->MR1 = 0;          // Apagado
-    LPC_PWM1->LER = (1 << 0) | (1 << 1);
-    LPC_PWM1->TCR = (1 << 0) | (1 << 3);
+    PWM_CHANNEL_CFG_Type chCfg;
+    chCfg.channelNum = 1;
+    chCfg.channelType = PWM_CHANNEL_SINGLE_EDGE;
+    chCfg.channelPolarity = MCPWM_CHANNEL_PASSIVE_LO;
+    chCfg.channelPeriodValue = 1000;
+    chCfg.channelPulsewidthValue = 0;
+    PWM_ConfigChannel(LPC_PWM1, 1, &chCfg);
+    PWM_ChannelCmd(LPC_PWM1, 1, ENABLE);
+    PWM_Cmd(LPC_PWM1, ENABLE);
 }
 
 void BuzzerPower_SetFrequency(uint32_t freq_hz) {
@@ -21,13 +32,11 @@ void BuzzerPower_SetFrequency(uint32_t freq_hz) {
         BuzzerPower_Stop();
         return;
     }
-    uint32_t period_us = 1000000 / freq_hz;
-    LPC_PWM1->MR0 = period_us;
-    LPC_PWM1->MR1 = period_us / 2; // 50% duty cycle
-    LPC_PWM1->LER |= (1 << 0) | (1 << 1);
+    uint32_t period = 1000000 / freq_hz;
+    PWM_MatchUpdate(LPC_PWM1, 0, period, PWM_MATCH_UPDATE_NOW);
+    PWM_MatchUpdate(LPC_PWM1, 1, period / 2, PWM_MATCH_UPDATE_NOW);
 }
 
 void BuzzerPower_Stop(void) {
-    LPC_PWM1->MR1 = 0;
-    LPC_PWM1->LER |= (1 << 1);
+    PWM_MatchUpdate(LPC_PWM1, 1, 0, PWM_MATCH_UPDATE_NOW);
 }
