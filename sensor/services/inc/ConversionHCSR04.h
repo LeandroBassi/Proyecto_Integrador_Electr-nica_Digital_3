@@ -1,6 +1,8 @@
 #ifndef CONVERSIONHCSR04_H
 #define CONVERSIONHCSR04_H
 
-int ConversionHCSR04_ToCm(int timer_ticks);
+#include <stdint.h>
+
+float HCSR04_Width_to_Distance(uint32_t echo_width_us);
 
 #endif

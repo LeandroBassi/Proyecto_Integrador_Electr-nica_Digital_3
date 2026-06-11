@@ -1,6 +1,5 @@
 #include "DriverTeclado.h"
+#include "TecladoHW.h"
 
-int DriverTeclado_GetInput(void) {
-    // Logic for debouncing/decoding
-    return 0;
-}
+void DriverTeclado_Init(void) { TecladoHW_Init(); }
+// Lógica de debounce/eventos iría aquí

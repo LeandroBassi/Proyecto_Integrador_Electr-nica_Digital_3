@@ -1,6 +1,6 @@
 #ifndef DRIVERTECLADO_H
 #define DRIVERTECLADO_H
 
-int DriverTeclado_GetInput(void);
+void DriverTeclado_Init(void);
 
 #endif
