@@ -53,7 +53,7 @@ static void TareaGestionEventos(void) {
 
 static void TareaControlEstacionamiento(void) {
     uint16_t distancia_actual;
-    EstadoSistema_t nuevo_estado;
+    SystemState_t nuevo_estado;
 
     // Process GPDMA hardware buffers and read current system distance
     DistanciaCm_ProcesarMuestras();
@@ -61,16 +61,16 @@ static void TareaControlEstacionamiento(void) {
 
     // Clean, domain-driven threshold assessment
     if (distancia_actual > umbral_actual) {
-        nuevo_estado = ESTADO_SISTEMA_APAGADO;
+        nuevo_estado = SYSTEM_STATE_OFF;
     } 
     else if (distancia_actual >= 80 && distancia_actual <= 400) {
-        nuevo_estado = ESTADO_SISTEMA_SEGURO;
+        nuevo_estado = SYSTEM_STATE_SAFE;
     } 
     else if (distancia_actual >= 30 && distancia_actual < 80) {
-        nuevo_estado = ESTADO_SISTEMA_ADVERTENCIA;
+        nuevo_estado = SYSTEM_STATE_WARNING;
     } 
     else {
-        nuevo_estado = ESTADO_SISTEMA_PELIGRO;
+        nuevo_estado = SYSTEM_STATE_DANGER;
     }
 
     // ATOMIC SERVICE UPDATE: The service guarantees visual and audio synchronization

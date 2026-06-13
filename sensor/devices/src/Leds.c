@@ -8,19 +8,19 @@ void Leds_Init(void) {
     Leds_ClearAll();
 }
 
-void Leds_Prender(Led_t led) {
+void Leds_TurnOn(Led_t led) {
     switch(led) {
-        case LED_VERDE:    LPC_GPIO0->FIOSET = (1 << 7); break;
-        case LED_AMARILLO: LPC_GPIO0->FIOSET = (1 << 8); break;
-        case LED_ROJO:     LPC_GPIO0->FIOSET = (1 << 9); break;
+        case LED_GREEN:    LPC_GPIO0->FIOSET = (1 << 7); break;
+        case LED_YELLOW:   LPC_GPIO0->FIOSET = (1 << 8); break;
+        case LED_RED:      LPC_GPIO0->FIOSET = (1 << 9); break;
     }
 }
 
-void Leds_Apagar(Led_t led) {
+void Leds_TurnOff(Led_t led) {
     switch(led) {
-        case LED_VERDE:    LPC_GPIO0->FIOCLR = (1 << 7); break;
-        case LED_AMARILLO: LPC_GPIO0->FIOCLR = (1 << 8); break;
-        case LED_ROJO:     LPC_GPIO0->FIOCLR = (1 << 9); break;
+        case LED_GREEN:    LPC_GPIO0->FIOCLR = (1 << 7); break;
+        case LED_YELLOW:   LPC_GPIO0->FIOCLR = (1 << 8); break;
+        case LED_RED:      LPC_GPIO0->FIOCLR = (1 << 9); break;
     }
 }
 
