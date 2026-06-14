@@ -4,6 +4,6 @@
 #include <stdbool.h>
 
 void Pulsador_Init(void);
-bool Pulsador_EstaPresionado(void);
+bool Pulsador_IsPressed(void);
 
 #endif /* PULSADOR_H */

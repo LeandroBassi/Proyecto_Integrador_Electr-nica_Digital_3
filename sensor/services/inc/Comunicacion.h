@@ -4,9 +4,21 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void Comunicacion_Init(void);
-void Comunicacion_TransmitirEstadoActual(uint16_t cms);
-bool Comunicacion_RecibirModificacionesPC(uint16_t *nuevo_umbral, bool *solicitud_silencio);
-bool Comunicacion_HitoTiempoAlcanzado(uint32_t *cronometro, uint32_t periodo_ms);
+typedef enum
+{
+    COMMAND_NONE = 0,
+    COMMAND_TOGGLE_MUTE,
+    COMMAND_SET_THRESHOLD
+} Command_t;
 
-#endif /* COMUNICACION_H */
+typedef struct
+{
+    Command_t command;
+    uint16_t value;
+} PCCommand_t;
+
+void Comunicacion_Init(void);
+void Comunicacion_TransmitCurrentState(uint16_t distance_cm);
+PCCommand_t Comunicacion_ReceiveCommand(void);
+
+#endif

@@ -1,5 +1,12 @@
-#include "ConversionHCSR04.h"
+#include "DistanciaCm.h"
 
-int ConversionHCSR04_ToCm(int timer_ticks) {
-    return 0;
+void DistanciaCm_Init(void){
+
 }
+void DistanciaCm_ProcessSamples(void){
+
+}
+uint16_t DistanciaCm_GetLatestMeasurement(void){
+	return 0;
+}
+

@@ -12,8 +12,8 @@ typedef enum {
 } SystemState_t;
 
 void Alarma_Init(void);
-void Alarma_ActualizarInterfaz(SystemState_t state, uint16_t cms);
-void Alarma_ConmutarSilencio(void);
-bool Alarma_ComprobarEventoPulsador(void);
+void Alarma_UpdateInterface(SystemState_t state, uint16_t cms);
+void Alarma_ToggleMute(void);
+bool Alarma_CheckButtonEvent(void);
 
 #endif /* ALARMA_H */

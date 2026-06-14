@@ -1,10 +1,10 @@
-#include "SharpGP2Y.h"
+#include "SensorSharp.h"
 
-void SharpGP2Y_Init(void) {
+void SensorSharp_Init(void) {
     // Configuración ADC para Sharp GP2Y
 }
 
-int SharpGP2Y_Read(void) {
+uint16_t SensorSharp_Read(void) {
     // Lectura de voltaje
     return 0;
 }
