@@ -1,9 +1,9 @@
-#include "PulsadorHW.h"
+#include "Pulsador.h"
 
-void PulsadorHW_Init(void) {
+void Pulsador_Init(void) {
     // Configuración GPIO pulsador
 }
 
-int PulsadorHW_IsPressed(void) {
+bool Pulsador_IsPressed(void) {
     return 0;
 }

@@ -1,5 +1,14 @@
-#include "DriverBuzzer.h"
+#include "Alarma.h"
 
-void DriverBuzzer_Process(int distance) {
-    // Logic for buzzer
+void Alarma_Init(void) {
+
+}
+void Alarma_UpdateInterface(SystemState_t state, uint16_t cms){
+
+}
+void Alarma_ToggleMute(void){
+
+}
+bool Alarma_CheckButtonEvent(void){
+	return 0;
 }

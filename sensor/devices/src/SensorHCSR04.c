@@ -1,10 +1,11 @@
-#include "HCSR04.h"
+#include "SensorHCSR04.h"
 
-void HCSR04_Init(void) {
+void SensorHCSR04_Init(void) {
     // Configuración Timer/GPIO para HC-SR04
 }
 
-int HCSR04_Read(void) {
+
+uint16_t SensorHCSR04_Read(void) {
     // Medición de eco
     return 0;
 }

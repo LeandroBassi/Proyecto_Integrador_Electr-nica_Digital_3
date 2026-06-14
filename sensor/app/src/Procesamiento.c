@@ -3,76 +3,71 @@
 #include "Alarma.h"
 #include "Comunicacion.h"
 
-#define PERIODO_MUESTREO_MS    50   // 20 Hz loop
-#define PERIODO_TELEMETRIA_MS  250  // 4 Hz loop
-#define UMBRAL_MAX_SISTEMA     400
+#include "DistanciaCm.h"
+#include "Alarma.h"
+#include "Comunicacion.h"
 
-static uint16_t umbral_actual = UMBRAL_MAX_SISTEMA;
-static uint32_t cronometro_sensores = 0;
-static uint32_t cronometro_telemetria = 0;
+#include "Timebase.h"
 
-static void TareaControlEstacionamiento(void);
-static void TareaGestionEventos(void);
+#define SENSOR_UPDATE_PERIOD_MS     50
+#define TELEMETRY_PERIOD_MS         250
+#define MAX_DISTANCE_THRESHOLD_CM   400
+
+static uint16_t currentThreshold = MAX_DISTANCE_THRESHOLD_CM;
+
+static uint32_t sensorTimestamp = 0;
+static uint32_t telemetryTimestamp = 0;
+
+static void ParkingControlTask(void);
 
 void Procesamiento_Run(void) {
-    // 1. Check for immediate asynchronous updates (Mute / Overrides)
-    TareaGestionEventos();
+	PCCommand_t command;
 
-    // 2. Scheduled Sensor & Feedback Update Loop (Every 50ms)
-    if (DistanciaCm_HitoTiempoAlcanzado(&cronometro_sensores, PERIODO_MUESTREO_MS)) {
-        TareaControlEstacionamiento();
-    }
+	command = Comunicacion_ReceiveCommand();
 
-    // 3. Scheduled PC Serial Telemetry Update Loop (Every 250ms)
-    if (Comunicacion_HitoTiempoAlcanzado(&cronometro_telemetria, PERIODO_TELEMETRIA_MS)) {
-        uint16_t dist = DistanciaCm_ObtenerUltimaMedida();
-        // Telemetry service can request the active system state directly if needed
-        Comunicacion_TransmitirEstadoActual(dist); 
-    }
+	switch (command.command) {
+	case COMMAND_TOGGLE_MUTE:
+		Alarma_ToggleMute();
+		break;
+	case COMMAND_SET_THRESHOLD:
+		if ((command.value > 0)
+				&& (command.value <= MAX_DISTANCE_THRESHOLD_CM)) {
+			currentThreshold = command.value;
+		}
+		break;
+	case COMMAND_NONE:
+	default:
+		break;
+	}
+
+	if (Alarma_CheckButtonEvent()) {
+		Alarma_ToggleMute();
+	}
+	if (Timebase_IsPeriodElapsed(&sensorTimestamp, SENSOR_UPDATE_PERIOD_MS)) {
+		ParkingControlTask();
+	}
+	if (Timebase_IsPeriodElapsed(&telemetryTimestamp, TELEMETRY_PERIOD_MS)) {
+		Comunicacion_TransmitCurrentState(DistanciaCm_GetLatestMeasurement());
+	}
 }
 
-static void TareaGestionEventos(void) {
-    uint16_t umbral_pc = 0;
-    bool cmd_silencio_pc = false;
+static void ParkingControlTask(void) {
+	uint16_t currentDistance;
+	SystemState_t nextState;
 
-    // Process inputs from Notebook terminal
-    if (Comunicacion_RecibirModificacionesPC(&umbral_pc, &cmd_silencio_pc)) {
-        if (umbral_pc > 0 && umbral_pc <= UMBRAL_MAX_SISTEMA) {
-            umbral_actual = umbral_pc;
-        }
-        if (cmd_silencio_pc) {
-            Alarma_ConmutarSilencio();
-        }
-    }
+	DistanciaCm_ProcessSamples();
 
-    // Process input from physical EINT0 button ISR
-    if (Alarma_ComprobarEventoPulsador()) {
-        Alarma_ConmutarSilencio();
-    }
-}
+	currentDistance = DistanciaCm_GetLatestMeasurement();
 
-static void TareaControlEstacionamiento(void) {
-    uint16_t distancia_actual;
-    SystemState_t nuevo_estado;
+	if (currentDistance > currentThreshold) {
+		nextState = SYSTEM_STATE_OFF;
+	} else if (currentDistance >= 80) {
+		nextState = SYSTEM_STATE_SAFE;
+	} else if (currentDistance >= 30) {
+		nextState = SYSTEM_STATE_WARNING;
+	} else {
+		nextState = SYSTEM_STATE_DANGER;
+	}
 
-    // Process GPDMA hardware buffers and read current system distance
-    DistanciaCm_ProcesarMuestras();
-    distancia_actual = DistanciaCm_ObtenerUltimaMedida();
-
-    // Clean, domain-driven threshold assessment
-    if (distancia_actual > umbral_actual) {
-        nuevo_estado = SYSTEM_STATE_OFF;
-    } 
-    else if (distancia_actual >= 80 && distancia_actual <= 400) {
-        nuevo_estado = SYSTEM_STATE_SAFE;
-    } 
-    else if (distancia_actual >= 30 && distancia_actual < 80) {
-        nuevo_estado = SYSTEM_STATE_WARNING;
-    } 
-    else {
-        nuevo_estado = SYSTEM_STATE_DANGER;
-    }
-
-    // ATOMIC SERVICE UPDATE: The service guarantees visual and audio synchronization
-    Alarma_ActualizarInterfaz(nuevo_estado, distancia_actual);
+	Alarma_UpdateInterface(nextState, currentDistance);
 }
