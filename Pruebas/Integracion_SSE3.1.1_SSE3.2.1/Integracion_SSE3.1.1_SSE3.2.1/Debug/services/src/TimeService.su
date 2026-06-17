@@ -1,0 +1,5 @@
+C:\A - Sistemas embebidos\TP-FINAL-ED3\CMSISv2p00_LPC17xx\inc/core_cm3.h:1012:22:NVIC_SetPriority	16	static
+C:\A - Sistemas embebidos\TP-FINAL-ED3\CMSISv2p00_LPC17xx\inc/core_cm3.h:1137:26:SysTick_Config	16	static
+../services/src/TimeService.c:8:6:TimeService_Init	8	static
+../services/src/TimeService.c:13:6:SysTick_Handler	4	static
+../services/src/TimeService.c:17:6:TimeService_CheckAndClearTimeout	16	static

@@ -1,0 +1,7 @@
+C:\A - Sistemas embebidos\TP-FINAL-ED3\CMSISv2p00_LPC17xx\inc/core_cm3.h:941:22:NVIC_DisableIRQ	16	static
+../devices/src/SensorSharp.c:28:6:SensorSharp_Init	8	static
+../devices/src/SensorSharp.c:38:10:SensorSharp_GetPromedioCrudo	24	static
+../devices/src/SensorSharp.c:67:13:cfgGPIO	24	static
+../devices/src/SensorSharp.c:95:13:cfgTIMER1	32	static
+../devices/src/SensorSharp.c:124:13:cfgADC	8	static
+../devices/src/SensorSharp.c:149:13:cfgDMA	48	static
