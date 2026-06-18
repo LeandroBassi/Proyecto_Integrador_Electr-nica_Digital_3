@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    SensorSharp.c
+* @brief 	Implementación del sensor Sharp
+* @details	Configura los periféricos ADC, DMA y TIMER para realizar lecturas promediadas del sensor.
+* @note		ESW.2.1.11
+**********************************************************************/
+
 #include "SensorSharp.h"
 #include "lpc17xx_adc.h"
 #include "lpc17xx_gpio.h"
@@ -20,17 +27,39 @@
 // ---------------------------------------------------------
 volatile uint32_t *adc_samples = (uint32_t*)ADC_BUFFER_START;
 
-// ---------------------------------------------------------
-// PROTOTIPOS DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Configura los pines GPIO para el Sensor Sharp
+* @details	Configura los registros PINSEL para los pines ADC y TIMER.
+* @note		USW.2.1.11.3
+**********************************************************************/
 static void cfgGPIO(void);
+
+/*******************************************************************//**
+* @brief 	Configura el TIMER1
+* @details	Configura el TIMER1 para disparar la conversión ADC periódicamente.
+* @note		USW.2.1.11.4
+**********************************************************************/
 static void cfgTIMER1(void);
+
+/*******************************************************************//**
+* @brief 	Configura el módulo ADC
+* @details	Inicializa el ADC para trabajar con disparo por TIMER.
+* @note		USW.2.1.11.5
+**********************************************************************/
 static void cfgADC(void);
+
+/*******************************************************************//**
+* @brief 	Configura el módulo DMA
+* @details	Configura el DMA para transferir los resultados del ADC a memoria.
+* @note		USW.2.1.11.6
+**********************************************************************/
 static void cfgDMA(void);
 
-// ---------------------------------------------------------
-// FUNCIONES PUBLICAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Inicializa el sensor Sharp
+* @details	Configura los periféricos necesarios para la lectura del sensor (GPIO, ADC, DMA, TIMER).
+* @note		USW.2.1.11.1
+**********************************************************************/
 void SensorSharp_Init(void) {
 	cfgGPIO();
 	cfgTIMER1();
@@ -40,6 +69,11 @@ void SensorSharp_Init(void) {
 	return;
 }
 
+/*******************************************************************//**
+* @brief 	Obtiene el valor promedio del sensor
+* @details	Retorna el valor crudo (0-4095) promediado mediante DMA.
+* @note		USW.2.1.11.2
+**********************************************************************/
 uint16_t SensorSharp_GetPromedioCrudo(void) {
     uint32_t sumatoria = 0;
     uint16_t min_val = 4095; // Arranca en el máximo posible
@@ -69,9 +103,6 @@ uint16_t SensorSharp_GetPromedioCrudo(void) {
     return (uint16_t)(sumatoria / NUM_MUESTRAS);
 }
 
-// ---------------------------------------------------------
-// DESARROLLO DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
 static void cfgGPIO(void) {
 	//-- 1)Estructuras de Configuracion --
     //A)Configuración P0.23 AD0.0

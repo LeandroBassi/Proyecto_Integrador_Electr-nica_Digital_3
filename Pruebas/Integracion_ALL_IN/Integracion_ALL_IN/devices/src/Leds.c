@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	 Leds.c
+* @brief 	Implementación del dispositivo de LEDs
+* @details	Realiza la configuración de pines GPIO y ofrece las funciones de control para los LEDs.
+* @note		ESW.2.1.8
+**********************************************************************/
+
 #include "Leds.h"
 #include "LPC17xx.h"
 #include "lpc17xx_pinsel.h"
@@ -13,18 +20,27 @@
 #define RED_1_PIN  	((uint32_t)(1<<6))
 #define RED_2_PIN  	((uint32_t)(1<<0))
 
-// ---------------------------------------------------------
-// PROTOTIPOS DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Configura los pines GPIO para LEDs
+* @details	Configura los registros PINSEL y direcciones GPIO para los pines de los LEDs.
+* @note		USW.2.1.8.6
+**********************************************************************/
 static void cfgGPIO(void);
 
-// ---------------------------------------------------------
-// FUNCIONES PUBLICAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Inicializa el módulo de LEDs
+* @details	Configura los pines GPIO para los LEDs.
+* @note		USW.2.1.8.1
+**********************************************************************/
 void Leds_Init(void) {
 	cfgGPIO();
 }
 
+/*******************************************************************//**
+* @brief 	Enciende un LED
+* @details	Activa el pin correspondiente al LED seleccionado.
+* @note		USW.2.1.8.2
+**********************************************************************/
 void Led_TurnOn(Led_t led) {
     switch(led) {
         case LED_GREEN_1: GPIO_SetValue(LEDS_PORT, GREEN_1_PIN); break;
@@ -35,6 +51,11 @@ void Led_TurnOn(Led_t led) {
     }
 }
 
+/*******************************************************************//**
+* @brief 	Apaga un LED
+* @details	Desactiva el pin correspondiente al LED seleccionado.
+* @note		USW.2.1.8.3
+**********************************************************************/
 void Led_TurnOff(Led_t led) {
     switch(led) {
         case LED_GREEN_1: GPIO_ClearValue(LEDS_PORT, GREEN_1_PIN); break;
@@ -45,6 +66,11 @@ void Led_TurnOff(Led_t led) {
     }
 }
 
+/*******************************************************************//**
+* @brief 	Apaga todos los LEDs
+* @details	Desactiva todos los pines GPIO configurados como LEDs.
+* @note		USW.2.1.8.4
+**********************************************************************/
 void Leds_ClearAll(void) {
 	GPIO_ClearValue(LEDS_PORT, GREEN_1_PIN);
 	GPIO_ClearValue(LEDS_PORT, GREEN_2_PIN);
@@ -53,6 +79,11 @@ void Leds_ClearAll(void) {
 	GPIO_ClearValue(LEDS_PORT, RED_2_PIN);
 }
 
+/*******************************************************************//**
+* @brief 	Alterna el estado de un LED
+* @details	Cambia el estado actual (On/Off) del pin del LED.
+* @note		USW.2.1.8.5
+**********************************************************************/
 void Led_Toggle(Led_t led) {
 	uint32_t pin_state = GPIO_ReadValue(LEDS_PORT);
 
@@ -64,10 +95,7 @@ void Led_Toggle(Led_t led) {
 	}
 }
 
-// ---------------------------------------------------------
-// DEFINICION DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
-void cfgGPIO(void) {
+static void cfgGPIO(void) {
 	//-- 1)Estructuras de configuracion --
 	//a) Configuracion P0.9 GPIO OUTPUT: LED GREEN_1
 	PINSEL_CFG_Type cfgPinLed_GREEN_1;

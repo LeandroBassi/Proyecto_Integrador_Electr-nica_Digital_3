@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    Procesamiento.c
+* @brief 	Implementación del módulo de procesamiento
+* @details	Define la inicialización y el ciclo de actualización de la lógica del sistema integrando dispositivos y servicios.
+* @note		ESW.2.1.2
+**********************************************************************/
+
 #include "Procesamiento.h"
 
 // Dispositivos
@@ -15,6 +22,11 @@
 #include "Alarma.h"
 #include "TimeService.h"
 
+/*******************************************************************//**
+* @brief 	Inicializa el módulo de procesamiento
+* @details	Configura los recursos necesarios para el procesamiento de datos.
+* @note		USW.2.1.2.1
+**********************************************************************/
 void Procesamiento_Init(void) {
     // Inicializar toda la arquitectura de Software
     //a) Dispositivos:
@@ -32,6 +44,11 @@ void Procesamiento_Init(void) {
     return;
 }
 
+/*******************************************************************//**
+* @brief 	Actualiza el estado del procesamiento
+* @details	Ejecuta el ciclo de actualización de la lógica de procesamiento.
+* @note		USW.2.1.2.2
+**********************************************************************/
 void Procesamiento_Update(void) {
     uint8_t distancia_sharp = ConversionToCm_Sharp_GetDistancia();
     uint16_t distancia_hcsr04 = ConversionToCm_HCSR04_GetDistancia();

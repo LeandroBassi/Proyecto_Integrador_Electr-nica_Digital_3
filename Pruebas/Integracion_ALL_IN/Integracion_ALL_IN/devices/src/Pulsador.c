@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    Pulsador.c
+* @brief 	Implementación del dispositivo Pulsador
+* @details	Configura la interrupción externa EINT0 asociada al pulsador y maneja el debouncing.
+* @note		ESW.2.1.10
+**********************************************************************/
+
 #include "Pulsador.h"
 #include "Alarma.h"
 #include "LPC17xx.h"
@@ -10,20 +17,35 @@
 // ---------------------------------------------------------
 #define DEBOUNCE_MS 250
 
-// ---------------------------------------------------------
-// PROTOTIPOS DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Configura los pines GPIO para el Pulsador
+* @details	Configura los registros PINSEL para el pin del pulsador.
+* @note		USW.2.1.10.2
+**********************************************************************/
 static void cfgGPIO(void);
+
+/*******************************************************************//**
+* @brief 	Configura la interrupción externa EINT0
+* @details	Configura el modo y la polaridad de la interrupción externa EINT0.
+* @note		USW.2.1.10.3
+**********************************************************************/
 static void cfgEINT0(void);
 
-// ---------------------------------------------------------
-// FUNCIONES PUBLICAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Inicializa el módulo Pulsador
+* @details	Configura los pines y las interrupciones externas asociadas al pulsador.
+* @note		USW.2.1.10.1
+**********************************************************************/
 void Pulsador_Init(void) {
 	cfgGPIO();
 	cfgEINT0();
 }
 
+/*******************************************************************//**
+* @brief 	Handler de la interrupción externa EINT0
+* @details	Maneja el evento del pulsador con antirrebote y cambia el estado de la alarma.
+* @note		USW.2.1.10.4
+**********************************************************************/
 void EINT0_IRQHandler(void) {
     // Antirrebote: ignoramos la interrupción si llegó
     // antes de DEBOUNCE_MS desde la última vez
@@ -39,10 +61,7 @@ void EINT0_IRQHandler(void) {
     LPC_SC->EXTINT = (1 << 0);
 }
 
-// ---------------------------------------------------------
-// DEFINICION DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
-void cfgGPIO(void) {
+static void cfgGPIO(void) {
 	//-- 1)Estructura de configuracion --
 	//a) Configuracion P2.10 EINT0
     PINSEL_CFG_Type cfgEINT0;
@@ -58,7 +77,7 @@ void cfgGPIO(void) {
     return;
 }
 
-void cfgEINT0(void) {
+static void cfgEINT0(void) {
 	/*
     EXTI_InitTypeDef cfgEINT0;
 

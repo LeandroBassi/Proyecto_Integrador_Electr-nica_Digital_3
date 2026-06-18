@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    UART.c
+* @brief 	Implementación del dispositivo UART
+* @details	Configura la UART3 para comunicación serie no bloqueante mediante interrupciones.
+* @note		ESW.2.1.13
+**********************************************************************/
+
 #include "UART.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_uart.h"
@@ -6,15 +13,36 @@
 // Bandera interna para controlar si el periférico está transmitiendo
 static volatile bool tx_busy = false;
 
+/*******************************************************************//**
+* @brief 	Configura los pines GPIO para UART3
+* @details	Configura los registros PINSEL para los pines TX y RX de la UART3.
+* @note		USW.2.1.13.5
+**********************************************************************/
 static void cfgGPIO(void);
+
+/*******************************************************************//**
+* @brief 	Configura la UART3
+* @details	Configura el baudrate, FIFO e interrupciones de la UART3.
+* @note		USW.2.1.13.6
+**********************************************************************/
 static void cfgUART(void);
 //----------------------------------------------------------------
 
+/*******************************************************************//**
+* @brief 	Inicializa la UART3
+* @details	Configura los pines y los parámetros de comunicación de la UART3.
+* @note		USW.2.1.13.1
+**********************************************************************/
 void UART3_Init(void) {
     cfgGPIO();
     cfgUART();
 }
 
+/*******************************************************************//**
+* @brief 	Transmite datos por UART
+* @details	Transmite un buffer de datos de forma no bloqueante.
+* @note		USW.2.1.13.2
+**********************************************************************/
 void UART3_Transmit(uint8_t *data, uint32_t len) {
     // Solo enviamos si el hardware no está ocupado
     if (!tx_busy) {
@@ -24,10 +52,20 @@ void UART3_Transmit(uint8_t *data, uint32_t len) {
     }
 }
 
+/*******************************************************************//**
+* @brief 	Verifica disponibilidad del transmisor
+* @details	Retorna verdadero si el transmisor está libre para un nuevo envío.
+* @note		USW.2.1.13.3
+**********************************************************************/
 bool UART3_IsTxReady(void) {
     return !tx_busy;
 }
 
+/*******************************************************************//**
+* @brief 	Recibe datos por UART
+* @details	Recibe un byte por polling.
+* @note		USW.2.1.13.4
+**********************************************************************/
 bool UART3_Receive(uint8_t *data) {
     if (UART_GetLineStatus(LPC_UART3) & UART_LSR_RDR) {
         *data = UART_ReceiveByte(LPC_UART3);
@@ -78,8 +116,11 @@ static void cfgUART(void) {
     NVIC_EnableIRQ(UART3_IRQn);
 }
 
-//----------------------------------------------------------------
-// Handler de la Interrupción de la UART3
+/*******************************************************************//**
+* @brief 	Handler de la interrupción de la UART3
+* @details	Gestiona el evento de transmisión completada para liberar la bandera de ocupado.
+* @note		USW.2.1.13.7
+**********************************************************************/
 void UART3_IRQHandler(void) {
     // Identificamos la causa de la interrupción leyendo el IIR
     uint32_t intsrc = LPC_UART3->IIR;

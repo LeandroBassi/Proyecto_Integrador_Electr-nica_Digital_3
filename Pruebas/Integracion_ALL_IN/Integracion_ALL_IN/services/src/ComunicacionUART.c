@@ -1,6 +1,18 @@
+/*******************************************************************//**
+* @file	    ComunicacionUART.c
+* @brief 	Implementación del servicio de comunicación UART
+* @details	Formatea y transmite los datos de distancia a través de UART.
+* @note		ESW.2.1.3
+**********************************************************************/
+
 #include "ComunicacionUART.h"
 #include "UART.h"
 
+/*******************************************************************//**
+* @brief 	Envía las distancias medidas por UART
+* @details	Realiza el envío de los datos de los sensores a través de la interfaz UART de forma no bloqueante.
+* @note		USW.2.1.3.1
+**********************************************************************/
 void ComunicacionUART_EnviarDistancias(uint8_t dist_sharp, uint16_t dist_ultra) {
     // Plantilla exacta de 16 caracteres visibles + 1 nulo final = 17 bytes de memoria
     // Índices numéricos: Sharp en [2],[3] y Ultra en [9],[10],[11]

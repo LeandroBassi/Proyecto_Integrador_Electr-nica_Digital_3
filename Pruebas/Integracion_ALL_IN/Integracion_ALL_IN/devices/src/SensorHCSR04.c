@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    SensorHCSR04.c
+* @brief 	Implementación del sensor HCSR04
+* @details	Configura pines GPIO y TIMER0 para captura de tiempo del pulso Echo.
+* @note		ESW.2.1.12
+**********************************************************************/
+
 #include "SensorHCSR04.h"
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_timer.h"
@@ -18,21 +25,36 @@ static volatile uint32_t t_inicio = 0;
 static volatile uint32_t tiempo_vuelo_us = 0;
 static volatile bool flag_dato_listo = false;
 
-// ---------------------------------------------------------
-// PROTOTIPOS DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Configura los pines GPIO para el sensor HCSR04
+* @details	Configura registros PINSEL y direcciones GPIO para trigger y echo.
+* @note		USW.2.1.12.5
+**********************************************************************/
 static void cfgGPIO(void);
+
+/*******************************************************************//**
+* @brief 	Configura el TIMER0
+* @details	Configura TIMER0 en modo captura para medir el pulso Echo.
+* @note		USW.2.1.12.6
+**********************************************************************/
 static void cfgTIMER0(void);
 
-// ---------------------------------------------------------
-// FUNCIONES PUBLICAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Inicializa el sensor HCSR04
+* @details	Configura los pines GPIO y TIMER0 para el manejo del sensor.
+* @note		USW.2.1.12.1
+**********************************************************************/
 void SensorHCSR04_Init(void) {
     cfgGPIO();
     cfgTIMER0();
     SensorHCSR04_Trigger();
 }
 
+/*******************************************************************//**
+* @brief 	Dispara el pulso de inicio
+* @details	Genera el pulso de 10us para iniciar la medición del sensor.
+* @note		USW.2.1.12.2
+**********************************************************************/
 void SensorHCSR04_Trigger(void) {
     flag_dato_listo = false;
 
@@ -46,18 +68,25 @@ void SensorHCSR04_Trigger(void) {
     GPIO_ClearValue(TRIG_PORT, TRIG_PIN);
 }
 
+/*******************************************************************//**
+* @brief 	Verifica si hay datos listos
+* @details	Retorna 'true' si se ha completado la captura del pulso Echo.
+* @note		USW.2.1.12.3
+**********************************************************************/
 bool SensorHCSR04_IsDataReady(void) {
     return flag_dato_listo;
 }
 
+/*******************************************************************//**
+* @brief 	Obtiene el ancho del pulso
+* @details	Retorna el ancho del pulso Echo capturado en microsegundos.
+* @note		USW.2.1.12.4
+**********************************************************************/
 uint32_t SensorHCSR04_GetPulseUs(void) {
     // Almacenamos el resultado capturado por la interrupción
     return tiempo_vuelo_us;
 }
 
-// ---------------------------------------------------------
-// DEFINICION DE FUNCIONES PRIVADAS
-// ---------------------------------------------------------
 static void cfgGPIO(void) {
 	//-- 1)Estructuras de Configuracion --
     //A)Configuración P1.26 CAP0.0: ECHO
@@ -117,6 +146,11 @@ static void cfgTIMER0(void) {
     return;
 }
 
+/*******************************************************************//**
+* @brief 	Handler de la interrupción del TIMER0
+* @details	Maneja la captura de flancos (subida/bajada) del pulso Echo para medir el tiempo.
+* @note		USW.2.1.12.7
+**********************************************************************/
 void TIMER0_IRQHandler(void) {
     // Verificamos si la interrupción fue causada por CAP0.0
     if (TIM_GetIntStatus(LPC_TIM0, 4)) {

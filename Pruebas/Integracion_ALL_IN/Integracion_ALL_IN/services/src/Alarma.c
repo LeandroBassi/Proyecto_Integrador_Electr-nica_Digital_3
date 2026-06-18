@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    Alarma.c
+* @brief 	Implementación del servicio de alarma
+* @details	Define el comportamiento de los indicadores (LEDs/Buzzer) según las distancias recibidas.
+* @note		ESW.2.1.4
+**********************************************************************/
+
 #include "Alarma.h"
 #include "Leds.h"
 #include "Buzzer.h"
@@ -15,13 +22,20 @@
 // ---------------------------------------------------------
 static bool is_muted = false;
 
-// ---------------------------------------------------------
-// FUNCIONES PUBLICAS
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Inicializa el servicio de alarma
+* @details	Configura los recursos necesarios para la gestión de alarmas.
+* @note		USW.2.1.4.1
+**********************************************************************/
 void Alarma_Init(void) {
     is_muted = false;
 }
 
+/*******************************************************************//**
+* @brief 	Alterna el estado de silencio de la alarma
+* @details	Cambia el estado actual de silencio del servicio.
+* @note		USW.2.1.4.2
+**********************************************************************/
 void Alarma_ToggleMute(void) {
     is_muted = !is_muted;
     if (is_muted) {
@@ -29,9 +43,11 @@ void Alarma_ToggleMute(void) {
     }
 }
 
-// ---------------------------------------------------------
-// FUNCIÓN AUXILIAR PRIVADA: Blink no bloqueante
-// ---------------------------------------------------------
+/*******************************************************************//**
+* @brief 	Parpadeo no bloqueante de LEDs
+* @details	Alterna el estado de un LED y el buzzer según el tiempo transcurrido.
+* @note		USW.2.1.4.4
+**********************************************************************/
 static void BlinkLeds(Led_t led_activo, uint32_t delay_ms) {
     static uint32_t t_blink = 0;
 
@@ -50,6 +66,11 @@ static void BlinkLeds(Led_t led_activo, uint32_t delay_ms) {
     }
 }
 
+/*******************************************************************//**
+* @brief 	Actualiza la lógica de la alarma
+* @details	Evalúa las distancias y activa las señales correspondientes.
+* @note		USW.2.1.4.3
+**********************************************************************/
 void Alarma_Update(uint8_t d_sharp, uint16_t d_ultra) {
 	//CASOS USANDO DISTANCIA CONVERTIDA DEL HC-SR04: d < 10cm && d > 80cm
     // CASO 1: d_ultra menor a 10cm

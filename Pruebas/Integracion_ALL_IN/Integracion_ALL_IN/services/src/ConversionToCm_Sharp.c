@@ -1,3 +1,10 @@
+/*******************************************************************//**
+* @file	    ConversionToCm_Sharp.c
+* @brief 	Implementación de la conversión para Sharp
+* @details	Realiza el cálculo de distancia a partir de la lectura ADC del sensor Sharp usando interpolación lineal.
+* @note		ESW.2.1.6
+**********************************************************************/
+
 #include "ConversionToCm_Sharp.h"
 #include "SensorSharp.h"
 
@@ -25,6 +32,11 @@ static const PuntoCalibracion tabla_sharp[] = {
     {500,  80}
 };
 
+/*******************************************************************//**
+* @brief 	Obtiene la distancia medida en cm
+* @details	Calcula y retorna la distancia del sensor Sharp a partir de la lectura ADC procesada.
+* @note		USW.2.1.6.1
+**********************************************************************/
 uint8_t ConversionToCm_Sharp_GetDistancia(void) {
     uint16_t valorCrudo = SensorSharp_GetPromedioCrudo();
 
