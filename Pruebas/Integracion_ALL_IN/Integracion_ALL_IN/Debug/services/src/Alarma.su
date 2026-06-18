@@ -1,0 +1,4 @@
+../services/src/Alarma.c:21:6:Alarma_Init	4	static
+../services/src/Alarma.c:25:6:Alarma_ToggleMute	8	static
+../services/src/Alarma.c:35:13:BlinkLeds	16	static
+../services/src/Alarma.c:53:6:Alarma_Update	16	static

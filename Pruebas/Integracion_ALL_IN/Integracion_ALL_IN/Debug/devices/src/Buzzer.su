@@ -1,0 +1,4 @@
+../devices/src/Buzzer.c:20:6:Buzzer_Init	8	static
+../devices/src/Buzzer.c:24:6:Buzzer_Set	16	static
+../devices/src/Buzzer.c:32:6:Buzzer_Toggle	16	static
+../devices/src/Buzzer.c:47:13:cfgGPIO	16	static
